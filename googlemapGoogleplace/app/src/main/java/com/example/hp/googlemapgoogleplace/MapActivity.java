@@ -2,7 +2,10 @@ package com.example.hp.googlemapgoogleplace;
 
 import android.*;
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,13 +20,18 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hp.googlemapgoogleplace.models.DirectionFinder;
+import com.example.hp.googlemapgoogleplace.models.DirectionFinderListener;
+import com.example.hp.googlemapgoogleplace.models.Route;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -38,16 +46,21 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import com.example.hp.googlemapgoogleplace.models.PlaceInfo;
 
@@ -55,7 +68,7 @@ import com.example.hp.googlemapgoogleplace.models.PlaceInfo;
  * Created by User on 10/2/2017.
  */
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleApiClient.OnConnectionFailedListener{
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleApiClient.OnConnectionFailedListener,DirectionFinderListener {
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -95,7 +108,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     //widgets
     private AutoCompleteTextView mSearchText;
-    private ImageView mGps, mInfo;
+    private ImageView mGps;
+    private ImageView mInfo;
+    private Button btnFindPath;
 
 
 
@@ -107,6 +122,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
     private PlaceInfo mPlace;
     private Marker mMarker;
+    private List<Marker> originMarkers = new ArrayList<>();
+    private List<Marker> destinationMarkers = new ArrayList<>();
+    private List<Polyline> polylinePaths = new ArrayList<>();
+    private ProgressDialog progressDialog;
+
 
 
     @Override
@@ -116,6 +136,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
         mInfo=(ImageView) findViewById(R.id.place_info);
+        btnFindPath = (Button) findViewById(R.id.btnFindPath);
 
         getLocationPermission();
     }
@@ -139,6 +160,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if(actionId == EditorInfo.IME_ACTION_SEARCH
@@ -147,6 +169,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
 
                     //execute our method for searching
+                    mMap.clear();
                     geoLocate();
                 }
 
@@ -179,7 +202,264 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+        btnFindPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.clear();
+                sendRequest();
+            }
+        });
+
         hideSoftKeyboard();
+
+
+    }
+
+    private void sendRequest() {
+        String origin = "jaffna";
+        String destination = mSearchText.getText().toString();
+        if (origin.isEmpty()) {
+            Toast.makeText(this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (destination.isEmpty()) {
+            Toast.makeText(this, "Please enter destination address!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            new DirectionFinder(this, origin, destination).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDirectionFinderStart() {
+        progressDialog = ProgressDialog.show(this, "Please wait.",
+                "Finding direction..!", true);
+
+        if (originMarkers != null) {
+            for (Marker marker : originMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (destinationMarkers != null) {
+            for (Marker marker : destinationMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (polylinePaths != null) {
+            for (Polyline polyline:polylinePaths ) {
+                polyline.remove();
+            }
+        }
+    }
+
+    @Override
+    public void onDirectionFinderSuccess(List<Route> routes) {
+        progressDialog.dismiss();
+        polylinePaths = new ArrayList<>();
+        originMarkers = new ArrayList<>();
+        destinationMarkers = new ArrayList<>();
+
+
+        int size1=0;
+        int size2=0;
+        int size3=0;
+        Integer time;
+        int minTime;
+
+//        for (Route route : routes){
+//            int j=1;
+//
+//            if (j==1){
+//                size1=route.duration.value;
+//            }else if(j==2){
+//                size2=route.duration.value;
+//            }else if(j==3){
+//                size3=route.duration.value;
+//            }
+//
+//            j++;
+//        }
+
+//        minTime=Math.min(size1,Math.min(size2,size3));
+//        minTime=5;
+//        time=5;
+
+        PolylineOptions polylineOption1 = new PolylineOptions();
+        PolylineOptions polylineOption2 = new PolylineOptions();
+        PolylineOptions polylineOption3 = new PolylineOptions();
+
+        int j=1;
+
+        for (Route route : routes) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
+            ((TextView) findViewById(R.id.tvDuration)).setText(route.duration.text);
+            ((TextView) findViewById(R.id.tvDistance)).setText(route.distance.text);
+
+            originMarkers.add(mMap.addMarker(new MarkerOptions()
+//                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+                    .title(route.startAddress)
+                    .position(route.startLocation)));
+            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+//                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green))
+                    .title(route.endAddress)
+                    .position(route.endLocation)));
+
+            routes.size();
+
+            if (j==1){
+                size1=route.duration.value;
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOption1.add(route.points.get(i));
+
+            }else if(j==2){
+                size2=route.duration.value;
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOption2.add(route.points.get(i));
+
+            }else if(j==3){
+                size3=route.duration.value;
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOption3.add(route.points.get(i));
+            }
+
+            j++;
+
+//            PolylineOptions polylineOptions = new PolylineOptions().
+//                    geodesic(true).
+//                    color(Color.BLUE).
+//                    width(15);
+//
+//            PolylineOptions greypolylineOptions = new PolylineOptions().
+//                    geodesic(true).
+//                    color(Color.GRAY).
+//                    width(15);
+
+//            time=route.duration.value;
+
+
+//            if (minTime!=time){
+//                for (int i = 0; i < route.points.size(); i++)
+//                    greypolylineOptions.add(route.points.get(i));
+//
+//                polylinePaths.add(mMap.addPolyline(greypolylineOptions));
+//            }else{
+//                for (int i = 0; i < route.points.size(); i++)
+//                    polylineOptions.add(route.points.get(i));
+//
+//                polylinePaths.add(mMap.addPolyline(polylineOptions));
+//            }
+//            time++;
+
+        }
+
+//        minTime=Math.min(size1,Math.min(size2,size3));
+//
+//        if (minTime==size1){
+//            if (routes.size()==1){
+//                polylineOption1.geodesic(true).color(Color.BLUE).width(15);
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
+//            }else if (routes.size()==2){
+//                polylineOption2.geodesic(true).color(Color.GRAY).width(15);
+//                polylineOption1.geodesic(true).color(Color.BLUE).width(15);
+//
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
+//            }else{
+//                polylineOption2.geodesic(true).color(Color.GRAY).width(15);
+//                polylineOption3.geodesic(true).color(Color.GRAY).width(15);
+//                polylineOption1.geodesic(true).color(Color.BLUE).width(15);
+//
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
+//                polylinePaths.add(mMap.addPolyline(polylineOption3));
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
+//            }
+//
+//        }else if(minTime==size2){
+//            if (routes.size()==2){
+//                polylineOption1.geodesic(true).color(Color.GRAY).width(15);
+//                polylineOption2.geodesic(true).color(Color.BLUE).width(15);
+//
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
+//
+//            }else {
+//                polylineOption1.geodesic(true).color(Color.GRAY).width(15);
+//                polylineOption3.geodesic(true).color(Color.GRAY).width(15);
+//                polylineOption2.geodesic(true).color(Color.BLUE).width(15);
+//
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
+//                polylinePaths.add(mMap.addPolyline(polylineOption3));
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
+//            }
+//
+//        }else if (minTime==size3){
+//            polylineOption1.geodesic(true).color(Color.GRAY).width(15);
+//            polylineOption2.geodesic(true).color(Color.GRAY).width(15);
+//            polylineOption3.geodesic(true).color(Color.BLUE).width(15);
+//
+//            polylinePaths.add(mMap.addPolyline(polylineOption1));
+//            polylinePaths.add(mMap.addPolyline(polylineOption2));
+//            polylinePaths.add(mMap.addPolyline(polylineOption3));
+//        }
+
+        if (routes.size()==1){
+            polylineOption1.geodesic(true).color(Color.BLUE).width(15);
+            polylinePaths.add(mMap.addPolyline(polylineOption1));
+        }else if (routes.size()==2){
+            minTime=Math.min(size1,size2);
+
+            if (minTime==size2){
+                polylineOption1.geodesic(true).color(Color.GRAY).width(15);
+                polylineOption2.geodesic(true).color(Color.BLUE).width(15);
+
+                polylinePaths.add(mMap.addPolyline(polylineOption1));
+                polylinePaths.add(mMap.addPolyline(polylineOption2));
+            }else if (minTime==size1){
+                polylineOption2.geodesic(true).color(Color.GRAY).width(15);
+                polylineOption1.geodesic(true).color(Color.BLUE).width(15);
+
+                polylinePaths.add(mMap.addPolyline(polylineOption2));
+                polylinePaths.add(mMap.addPolyline(polylineOption1));
+            }
+
+        }else if (routes.size()==3){
+            minTime=Math.min(size1,Math.min(size2,size3));
+
+            if (minTime==size3){
+                polylineOption1.geodesic(true).color(Color.GRAY).width(15);
+                polylineOption2.geodesic(true).color(Color.GRAY).width(15);
+                polylineOption3.geodesic(true).color(Color.BLUE).width(15);
+
+                polylinePaths.add(mMap.addPolyline(polylineOption1));
+                polylinePaths.add(mMap.addPolyline(polylineOption2));
+                polylinePaths.add(mMap.addPolyline(polylineOption3));
+            }else if (minTime==size2){
+                polylineOption1.geodesic(true).color(Color.GRAY).width(15);
+                polylineOption3.geodesic(true).color(Color.GRAY).width(15);
+                polylineOption2.geodesic(true).color(Color.BLUE).width(15);
+
+                polylinePaths.add(mMap.addPolyline(polylineOption1));
+                polylinePaths.add(mMap.addPolyline(polylineOption3));
+                polylinePaths.add(mMap.addPolyline(polylineOption2));
+            }else if (minTime==size1){
+                polylineOption2.geodesic(true).color(Color.GRAY).width(15);
+                polylineOption3.geodesic(true).color(Color.GRAY).width(15);
+                polylineOption1.geodesic(true).color(Color.BLUE).width(15);
+
+                polylinePaths.add(mMap.addPolyline(polylineOption2));
+                polylinePaths.add(mMap.addPolyline(polylineOption3));
+                polylinePaths.add(mMap.addPolyline(polylineOption1));
+            }
+
+        }
+
+
     }
 
     private void geoLocate(){
@@ -204,6 +484,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM,
                     address.getAddressLine(0));
         }
+
+        hideSoftKeyboard();
     }
 
     private void getDeviceLocation(){
@@ -338,7 +620,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void hideSoftKeyboard(){
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+//        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        if(getCurrentFocus()!=null && getCurrentFocus() instanceof EditText)
+        {
+            InputMethodManager imm =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getWindow().getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
      /*
