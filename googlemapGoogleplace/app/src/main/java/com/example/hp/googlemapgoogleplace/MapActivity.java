@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -12,11 +13,17 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -49,6 +56,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -80,6 +88,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         mMap = googleMap;
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.mapstyle));
+
+            if (!success) {
+                Log.e("Mapactivity", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("Mapactivity", "Can't find style. Error: ", e);
+        }
 
         if (mLocationPermissionsGranted) {
             getDeviceLocation();
@@ -127,7 +148,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private List<Polyline> polylinePaths = new ArrayList<>();
     private ProgressDialog progressDialog;
 
-
+    private DrawerLayout mDrawerlayout;
+    private ActionBarDrawerToggle mToggle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,7 +160,69 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mInfo=(ImageView) findViewById(R.id.place_info);
         btnFindPath = (Button) findViewById(R.id.btnFindPath);
 
+        mDrawerlayout= (DrawerLayout) findViewById(R.id.drawer);
+        mToggle= new ActionBarDrawerToggle(this,mDrawerlayout,R.string.open,R.string.close);
+        mDrawerlayout.addDrawerListener(mToggle);
+        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nv);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setupDrawerContent(nvDrawer);
+
         getLocationPermission();
+    }
+
+    public void selectIterDrawer(MenuItem menuItem){
+        Fragment myFragment=null;
+        Class fragmentClass;
+        switch (menuItem.getItemId()){
+            case R.id.profile:
+                fragmentClass = Profile.class;
+                break;
+            case R.id.search:
+                fragmentClass = Search.class;
+                break;
+            case R.id.help:
+                fragmentClass = Help.class;
+                break;
+            case R.id.settings:
+                fragmentClass = Settings.class;
+                break;
+            case R.id.logout:
+                fragmentClass = Logout.class;
+                break;
+            default:
+                fragmentClass = Profile.class;
+        }
+
+        try {
+            myFragment = (Fragment) fragmentClass.newInstance();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.flcontent,myFragment).commit();
+        menuItem.setChecked(true);
+        setTitle(menuItem.getTitle());
+        mDrawerlayout.closeDrawers();
+    }
+
+    private void setupDrawerContent(NavigationView navigationView){
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                selectIterDrawer(item);
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        if (mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void init(){
