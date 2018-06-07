@@ -4,6 +4,7 @@ import android.*;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -163,13 +164,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mDrawerlayout= (DrawerLayout) findViewById(R.id.drawer);
         mToggle= new ActionBarDrawerToggle(this,mDrawerlayout,R.string.open,R.string.close);
         mDrawerlayout.addDrawerListener(mToggle);
-        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nv);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nv);
         setupDrawerContent(nvDrawer);
 
         getLocationPermission();
     }
+
 
     public void selectIterDrawer(MenuItem menuItem){
         Fragment myFragment=null;
@@ -204,7 +206,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         fragmentManager.beginTransaction().replace(R.id.flcontent,myFragment).commit();
         menuItem.setChecked(true);
         setTitle(menuItem.getTitle());
+        mToggle.setDrawerIndicatorEnabled(false);
         mDrawerlayout.closeDrawers();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void setupDrawerContent(NavigationView navigationView){
@@ -222,7 +232,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (mToggle.onOptionsItemSelected(item)){
             return true;
         }
+
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+//        return false;
+
         return super.onOptionsItemSelected(item);
+
+
     }
 
     private void init(){
