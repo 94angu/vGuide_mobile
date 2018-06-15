@@ -1,87 +1,31 @@
 {
   "project_info": {
-    "project_number": "596726911399",
-    "firebase_url": "https://vguide1-786da.firebaseio.com",
-    "project_id": "vguide1-786da",
-    "storage_bucket": "vguide1-786da.appspot.com"
+    "project_number": "1087155521559",
+    "firebase_url": "https://vguide-app.firebaseio.com",
+    "project_id": "vguide-app",
+    "storage_bucket": "vguide-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:596726911399:android:5325874c9d2a16ce",
-        "android_client_info": {
-          "package_name": "com.example.hp.googlemapgoogleplace"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "596726911399-d87d4j8g8gvnmse96o488mv3q5acfpt6.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.hp.googlemapgoogleplace",
-            "certificate_hash": "1d062e3ebf00634b3bf0b0fea522d16c24dcc3c0"
-          }
-        },
-        {
-          "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBzFyEUwHHQpDRiWxkzrgze9eW4YCSSJYI"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:596726911399:android:4a3fbeb12e9f1694",
+        "mobilesdk_app_id": "1:1087155521559:android:4a3fbeb12e9f1694",
         "android_client_info": {
           "package_name": "com.example.hp.vguide"
         }
       },
       "oauth_client": [
         {
-          "client_id": "596726911399-0j6tj64l9i92h0v5o96sbifh8u8l1905.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.hp.vguide",
-            "certificate_hash": "1d062e3ebf00634b3bf0b0fea522d16c24dcc3c0"
-          }
-        },
-        {
-          "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
+          "client_id": "1087155521559-juovgev99ks8lgh8t7m501qnf46fn15t.apps.googleusercontent.com",
           "client_type": 3
         },
         {
-          "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
+          "client_id": "1087155521559-juovgev99ks8lgh8t7m501qnf46fn15t.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBzFyEUwHHQpDRiWxkzrgze9eW4YCSSJYI"
+          "current_key": "AIzaSyAhxlJ9h1t3pITycJZf8Jf8bXyfqRKYFSY"
         }
       ],
       "services": {
@@ -89,61 +33,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:596726911399:android:7ec5ab5cc793a3dd",
-        "android_client_info": {
-          "package_name": "com.example.hudl.vguide1"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "596726911399-eg1lapf26d7tj1fnu30mdu577i8rj91e.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.hudl.vguide1",
-            "certificate_hash": "cecdc96becfac1c6707ea5f4aeb08afdffd680ec"
-          }
-        },
-        {
-          "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBzFyEUwHHQpDRiWxkzrgze9eW4YCSSJYI"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "596726911399-hfh3mv3d62qikhho00eksobfqkmgn0u1.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2
