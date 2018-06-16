@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -73,7 +74,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
             Toast.makeText(Register.this, "Enter Password", Toast.LENGTH_SHORT).show();
             return;
         }else if (Password.length()<6){
-            Toast.makeText(Register.this,"Passwor must be greater then 6 digit",Toast.LENGTH_SHORT).show();
+            Toast.makeText(Register.this,"Password must be greater then 6 digit",Toast.LENGTH_SHORT).show();
             return;
         }
         mDialog.setMessage("Creating User please wait...");
@@ -87,8 +88,13 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                     mDialog.dismiss();
                     OnAuth(task.getResult().getUser());
                     mAuth.signOut();
+
                 }else{
-                    Toast.makeText(Register.this,"error on creating user",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this,"Invalid Username or Password..!",Toast.LENGTH_SHORT).show();
+                    mDialog.dismiss();
+                    name.getText().clear();
+                    email.getText().clear();
+                    password.getText().clear();
                 }
             }
         });
@@ -103,6 +109,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                     if (task.isSuccessful()){
                         Toast.makeText(Register.this,"Check your Email for verification",Toast.LENGTH_SHORT).show();
                         FirebaseAuth.getInstance().signOut();
+                        finish();
                     }
                 }
             });
@@ -114,6 +121,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     }
 
     private void createAnewUser(String uid) {
+
         User user = BuildNewuser();
         mdatabase.child(uid).setValue(user);
     }
@@ -127,11 +135,11 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
         );
     }
 
-    public String getDisplayName() {
+    private String getDisplayName() {
         return Name;
     }
 
-    public String getUserEmail() {
+    private String getUserEmail() {
         return Email;
     }
 

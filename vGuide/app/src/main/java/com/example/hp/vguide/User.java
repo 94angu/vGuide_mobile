@@ -1,22 +1,22 @@
 package com.example.hp.vguide;
 
 class User {
-    String Displayname;
+    private String displayName;
 
 
-    String Email;
-    long createdAt;
+    private String Email;
+    private long createdAt;
 
     public User (){};
-    public User(String displayname,String email,long createdAt){
-        this.Displayname=displayname;
+    public User(String displayName,String email,long createdAt){
+        this.displayName=displayName;
         this.Email=email;
         this.createdAt=createdAt;
     }
 
 
     public String getDisplayname() {
-        return Displayname;
+        return displayName;
     }
 
     public String getEmail() {
@@ -28,3 +28,4 @@ class User {
     }
 
 }
+

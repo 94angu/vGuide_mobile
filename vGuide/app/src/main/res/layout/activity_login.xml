@@ -8,7 +8,7 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
-    tools:context="com.example.hudl.vguide1.login">
+    tools:context="com.example.hp.vguide.Login">
 
     <TextView
         android:id="@+id/textView"
