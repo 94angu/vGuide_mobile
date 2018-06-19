@@ -152,6 +152,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private DrawerLayout mDrawerlayout;
     private ActionBarDrawerToggle mToggle;
 
+    private PolylineOptions polylineOption1 = new PolylineOptions();
+    private PolylineOptions polylineOption2 = new PolylineOptions();
+    private PolylineOptions polylineOption3 = new PolylineOptions();
+
+    private Polyline line1;
+    private Polyline line2;
+    private Polyline line3;
+
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -313,6 +323,47 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener()
+        {
+            @Override
+            public void onPolylineClick(Polyline polyline)
+            {
+                line1.setColor(Color.GRAY);
+                line1.setZIndex(1f);
+
+                if (line3 == null){
+                    line2.setColor(Color.GRAY);
+                    line2.setZIndex(1f);
+
+                } else {
+                    line2.setColor(Color.GRAY);
+                    line2.setZIndex(1f);
+
+                    line3.setColor(Color.GRAY);
+                    line3.setZIndex(1f);
+                }
+
+                polyline.setColor(Color.BLUE);
+                polyline.setZIndex(2f);
+
+
+//                if (polyline.getTag()==line1.getTag()){
+//                    line2.setColor(Color.GRAY);
+//                    line2.setZIndex(1f);
+//
+//                    line3.setColor(Color.GRAY);
+//                    line3.setZIndex(1f);
+//
+//                    line1.setColor(Color.BLUE);
+//                    line1.setZIndex(2f);
+//                }
+            }
+        });
+
+
+
+
+
         hideSoftKeyboard();
 
 
@@ -393,9 +444,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //        minTime=5;
 //        time=5;
 
-        PolylineOptions polylineOption1 = new PolylineOptions();
-        PolylineOptions polylineOption2 = new PolylineOptions();
-        PolylineOptions polylineOption3 = new PolylineOptions();
+
+
+
+//        polylineOption1.clickable(true);
+//        polylineOption2.clickable(true);
+//        polylineOption3.clickable(true);
 
         int j=1;
 
@@ -513,7 +567,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (routes.size()==1){
             polylineOption1.geodesic(true).color(Color.BLUE).width(15);
-            polylinePaths.add(mMap.addPolyline(polylineOption1));
+
+            line1=mMap.addPolyline((polylineOption1));
+            line1.setClickable(true);
+            line1.setTag(new String("line1"));
+//            polylinePaths.add(mMap.addPolyline(polylineOption1));
         }else if (routes.size()==2){
             minTime=Math.min(size1,size2);
 
@@ -521,14 +579,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 polylineOption1.geodesic(true).color(Color.GRAY).width(15);
                 polylineOption2.geodesic(true).color(Color.BLUE).width(15);
 
-                polylinePaths.add(mMap.addPolyline(polylineOption1));
-                polylinePaths.add(mMap.addPolyline(polylineOption2));
+                 line1=mMap.addPolyline((polylineOption1));
+                 line1.setClickable(true);
+                 line1.setTag(new String("line1"));
+
+                 line2=mMap.addPolyline((polylineOption2));
+                 line2.setClickable(true);
+                 line2.setTag(new String("line2"));
+
+
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
             }else if (minTime==size1){
                 polylineOption2.geodesic(true).color(Color.GRAY).width(15);
                 polylineOption1.geodesic(true).color(Color.BLUE).width(15);
 
-                polylinePaths.add(mMap.addPolyline(polylineOption2));
-                polylinePaths.add(mMap.addPolyline(polylineOption1));
+                 line2=mMap.addPolyline((polylineOption2));
+                 line2.setClickable(true);
+                 line2.setTag(new String("line2"));
+
+                 line1=mMap.addPolyline((polylineOption1));
+                 line1.setClickable(true);
+                 line1.setTag(new String("line1"));
+
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
             }
 
         }else if (routes.size()==3){
@@ -539,25 +614,61 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 polylineOption2.geodesic(true).color(Color.GRAY).width(15);
                 polylineOption3.geodesic(true).color(Color.BLUE).width(15);
 
-                polylinePaths.add(mMap.addPolyline(polylineOption1));
-                polylinePaths.add(mMap.addPolyline(polylineOption2));
-                polylinePaths.add(mMap.addPolyline(polylineOption3));
+                line1=mMap.addPolyline((polylineOption1));
+                line1.setClickable(true);
+                line1.setTag(new String("line1"));
+
+                line2=mMap.addPolyline((polylineOption2));
+                line2.setClickable(true);
+                line2.setTag(new String("line2"));
+
+                line3=mMap.addPolyline((polylineOption3));
+                line3.setClickable(true);
+                line3.setTag(new String("line3"));
+
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
+//                polylinePaths.add(mMap.addPolyline(polylineOption3));
             }else if (minTime==size2){
                 polylineOption1.geodesic(true).color(Color.GRAY).width(15);
                 polylineOption3.geodesic(true).color(Color.GRAY).width(15);
                 polylineOption2.geodesic(true).color(Color.BLUE).width(15);
 
-                polylinePaths.add(mMap.addPolyline(polylineOption1));
-                polylinePaths.add(mMap.addPolyline(polylineOption3));
-                polylinePaths.add(mMap.addPolyline(polylineOption2));
+                line1=mMap.addPolyline((polylineOption1));
+                line1.setClickable(true);
+                line1.setTag(new String("line1"));
+
+                line3=mMap.addPolyline((polylineOption3));
+                line3.setClickable(true);
+                line3.setTag(new String("line3"));
+
+                line2=mMap.addPolyline((polylineOption2));
+                line2.setClickable(true);
+                line2.setTag(new String("line2"));
+
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
+//                polylinePaths.add(mMap.addPolyline(polylineOption3));
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
             }else if (minTime==size1){
                 polylineOption2.geodesic(true).color(Color.GRAY).width(15);
                 polylineOption3.geodesic(true).color(Color.GRAY).width(15);
                 polylineOption1.geodesic(true).color(Color.BLUE).width(15);
 
-                polylinePaths.add(mMap.addPolyline(polylineOption2));
-                polylinePaths.add(mMap.addPolyline(polylineOption3));
-                polylinePaths.add(mMap.addPolyline(polylineOption1));
+                line2=mMap.addPolyline((polylineOption2));
+                line2.setClickable(true);
+                line2.setTag(new String("line2"));
+
+                line3=mMap.addPolyline((polylineOption3));
+                line3.setClickable(true);
+                line3.setTag(new String("line3"));
+
+                line1=mMap.addPolyline((polylineOption1));
+                line1.setClickable(true);
+                line1.setTag(new String("line1"));
+
+//                polylinePaths.add(mMap.addPolyline(polylineOption2));
+//                polylinePaths.add(mMap.addPolyline(polylineOption3));
+//                polylinePaths.add(mMap.addPolyline(polylineOption1));
             }
 
         }
