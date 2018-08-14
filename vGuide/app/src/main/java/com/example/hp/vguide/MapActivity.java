@@ -148,6 +148,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
     private ProgressDialog progressDialog;
+    int PROXIMITY_RADIUS = 10000;
+    double latitude,longitude;
 
     private DrawerLayout mDrawerlayout;
     private ActionBarDrawerToggle mToggle;
@@ -346,17 +348,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 polyline.setColor(Color.BLUE);
                 polyline.setZIndex(2f);
 
+                List<LatLng> points = polyline.getPoints();
 
-//                if (polyline.getTag()==line1.getTag()){
-//                    line2.setColor(Color.GRAY);
-//                    line2.setZIndex(1f);
-//
-//                    line3.setColor(Color.GRAY);
-//                    line3.setZIndex(1f);
-//
-//                    line1.setColor(Color.BLUE);
-//                    line1.setZIndex(2f);
-//                }
+                for (int i=0;i<points.size();i=i+40){
+//                    Log.d(TAG, "onPolylineClick:"+points.get(i).latitude);
+//                    Log.d(TAG, "onPolylineClick:"+points.get(i).longitude);
+
+                    latitude=points.get(i).latitude;
+                    longitude=points.get(i).longitude;
+
+                    Object dataTransfer[] = new Object[2];
+                    GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+                    String type = "natural_feature";
+                    String url = getUrl(latitude, longitude, type);
+                    dataTransfer[0] = mMap;
+                    dataTransfer[1] = url;
+
+                    getNearbyPlacesData.execute(dataTransfer);
+                    Toast.makeText(MapActivity.this, "Showing Nearby Places", Toast.LENGTH_SHORT).show();
+                }
+
+
+
+
+
+
             }
         });
 
@@ -463,7 +479,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .title(route.startAddress)
                     .position(route.startLocation)));
             destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-//                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green))
+//                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
                     .title(route.endAddress)
                     .position(route.endLocation)));
 
@@ -697,9 +713,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM,
                     address.getAddressLine(0));
+
         }
 
         hideSoftKeyboard();
+    }
+
+    private String getUrl(double latitude , double longitude , String nearbyPlace)
+    {
+
+        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlaceUrl.append("location="+latitude+","+longitude);
+        googlePlaceUrl.append("&radius="+PROXIMITY_RADIUS);
+        googlePlaceUrl.append("&type="+nearbyPlace);
+        googlePlaceUrl.append("&sensor=true");
+        googlePlaceUrl.append("&key="+"AIzaSyChdVUDDTrvkHu6LgtLQq86ziWVy5SdUNE");
+
+        Log.d("MapsActivity", "url = "+googlePlaceUrl.toString());
+
+        return googlePlaceUrl.toString();
     }
 
     private void getDeviceLocation(){

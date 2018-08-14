@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 
 public class Logout extends Login {
 
-//
-//    public Logout() {
-//        super.signOut();
-//    }
+
+    public Logout() {
+        super.signOut();
+    }
 
 
 

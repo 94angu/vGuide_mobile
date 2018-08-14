@@ -104,6 +104,11 @@ public class Login extends AppCompatActivity {
 
     }
 
+    public void signOut() {
+        mAuth.signOut();
+        finish();
+    }
+
     @Override
     public void onBackPressed() {
         Login.super.finish();

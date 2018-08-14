@@ -15,17 +15,25 @@
       },
       "oauth_client": [
         {
-          "client_id": "1087155521559-juovgev99ks8lgh8t7m501qnf46fn15t.apps.googleusercontent.com",
+          "client_id": "1087155521559-ktbi9e64tvgk1rodrt4nto1vuko9e3tu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hp.vguide",
+            "certificate_hash": "cecdc96becfac1c6707ea5f4aeb08afdffd680ec"
+          }
+        },
+        {
+          "client_id": "1087155521559-t0e8g1jntv5m2vvpk7pkue6edp6m93ge.apps.googleusercontent.com",
           "client_type": 3
         },
         {
-          "client_id": "1087155521559-juovgev99ks8lgh8t7m501qnf46fn15t.apps.googleusercontent.com",
+          "client_id": "1087155521559-t0e8g1jntv5m2vvpk7pkue6edp6m93ge.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAhxlJ9h1t3pITycJZf8Jf8bXyfqRKYFSY"
+          "current_key": "AIzaSyB8h4VuLyL56SCxS2zXxN8uqO0B5muMRF4"
         }
       ],
       "services": {
@@ -33,8 +41,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1087155521559-t0e8g1jntv5m2vvpk7pkue6edp6m93ge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
