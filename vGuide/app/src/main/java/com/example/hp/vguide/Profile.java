@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +33,10 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.google.firebase.auth.FirebaseAuth;
 
-import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.RESULT_OK;
+import static android.app.Activity.RESULT_OK;
+
+
+//import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.RESULT_OK;
 
 
 /**
@@ -59,8 +63,10 @@ public class Profile extends Fragment {
     private StorageReference mStorage;
     private DatabaseReference mDatabase;
     private ProgressDialog mProgress;
+    private StorageReference mStorageRef;
+
     private Toolbar mToolbar;
-   // private Firebase mRootRef;
+   //private Firebase mRootRef;
     private TextView mNameView;
     private DatabaseReference mDatabase1;
     private ImageView mImageView;
@@ -105,7 +111,7 @@ public class Profile extends Fragment {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
 
-      /*  mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         String userId = mAuth.getCurrentUser().getUid();
 
 
@@ -113,7 +119,7 @@ public class Profile extends Fragment {
         mStorage = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
 
-        mDatabase1 = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("username");
+        mDatabase1 = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("displayname");
         mDatabase2 = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("image");
 
 
@@ -123,7 +129,12 @@ public class Profile extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 String image1 = dataSnapshot.getValue().toString();
-                // Picasso.with(Profiles.this).load(image1).into(mImageView);
+                Context c = getActivity().getApplicationContext();
+                Picasso.with(c).load(image1).into(mImageView);
+
+
+
+
 
 
             }
@@ -135,7 +146,7 @@ public class Profile extends Fragment {
         });
 
 
-        mNameView = (TextView) v.findViewById(R.id.textView2);
+        mNameView = (TextView) v.findViewById(R.id.profile_name);
         mDatabase1.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -151,13 +162,15 @@ public class Profile extends Fragment {
             }
         });
 
-*/
+
 
 
 
         mProfileImage = (ImageButton) v.findViewById(R.id.imageButton);
         mProfileName =(EditText) v.findViewById(R.id.editText);
         mProfileStrBtn=(Button) v.findViewById(R.id.button2);
+
+
         //mProgress = new ProgressDialog(this);
 
         mProfileImage.setOnClickListener(new View.OnClickListener() {
@@ -182,41 +195,31 @@ public class Profile extends Fragment {
         });
 
 
-        // DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("contacts");
-        // mlistview = (ListView)findViewById(R.id.grouplist2);
 
 
-        // FirebaseListAdapter<String> firebaseListAdapter = new FirebaseListAdapter<String>(
-        // this,
-        // String.class,
-        // android.R.layout.simple_list_item_1,
-        // mDatabase
-        /// ) {
-        // @Override
-        //protected void populateView(View view, String model, int i) {
 
-        // TextView textview = (TextView)view.findViewById(android.R.id.text1);
-        // textview.setText(model);
+
+
     return v;
     }
-    // };
-    // mlistview.setAdapter(firebaseListAdapter);
 
 
-    // }
+
+
 
     private void startPosting() {
 
-        mProgress.setMessage("uploaded");
-        mProgress.show();
+        //mProgress.setMessage("uploaded");
+        //mProgress.show();
 
         final String title_val = mProfileName.getText().toString().trim();
+        mDatabase.child("displayname").setValue(title_val);
 
-        if(!TextUtils.isEmpty(title_val) && mImageUri != null){
 
-            StorageReference filepath = mStorage.child("Hudl_Profiles").child(mImageUri.getLastPathSegment());
 
-            filepath.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        StorageReference filepath = mStorage.child("VGuide").child(mImageUri.getLastPathSegment());
+
+        filepath.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
@@ -227,7 +230,7 @@ public class Profile extends Fragment {
                     mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
                     DatabaseReference mData = mDatabase;
                     mDatabase.child("image").setValue(downloadUrl.toString());
-                    mDatabase.child("username").setValue(title_val);
+                    mDatabase.child("displayname").setValue(title_val);
                     // Map<String, String> userData = new HashMap<String, String>();
 
 
@@ -241,25 +244,16 @@ public class Profile extends Fragment {
                     // DatabaseReference newPost = mDatabase.push();
                     // newPost.child("username").setValue(title_val);
                     // newPost.child("image").setValue(downloadUrl.toString());
-                    mProgress.dismiss();
+                    //mProgress.dismiss();
 
 
                 }
             });
 
-        }
+
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK) {
-
-            mImageUri = data.getData();
-            mProfileImage.setImageURI(mImageUri);
-        }
-    }
 
 
 
@@ -321,7 +315,33 @@ public class Profile extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        getActivity();
+       // for (Fragment fragment : getChildFragmentManager().getFragments()) {
+            // fragment.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK) {
+            mImageUri = data.getData();
+            mProfileImage.setImageURI(mImageUri);
+            Uri uri =data.getData();
+            StorageReference filepath =mStorage.child("Photos").child(uri.getLastPathSegment());
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+
+                }
+            });
+
+        }
+    }
 }
+
 
 /*public class Profile extends AppCompatActivity {
 

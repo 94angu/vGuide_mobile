@@ -13,37 +13,35 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="24dp"
+        android:layout_width="360dp"
+        android:layout_height="191dp"
         android:src="@android:drawable/ic_menu_camera"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_name" />
 
     <TextView
         android:id="@+id/textView2"
+
         android:layout_width="247dp"
-        android:layout_height="39dp"
-        android:layout_marginBottom="28dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="3dp"
         android:text="Click here to choose :"
-        android:textAlignment="inherit"
+        android:textAlignment="center"
+        android:textColor="@color/cast_expanded_controller_background_color"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/editText"
-        app:layout_constraintHorizontal_bias="0.219"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <ImageButton
         android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="26dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginTop="21dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="29dp"
+        android:layout_marginTop="2dp"
         android:src="@drawable/ic_menu_camera"
         app:layout_constraintBottom_toTopOf="@+id/editText"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,28 +50,49 @@
 
     <EditText
         android:id="@+id/editText"
-        android:layout_width="0dp"
-        android:layout_height="42dp"
-        android:layout_marginBottom="77dp"
+        style="@android:style/Widget.AutoCompleteTextView"
+        android:layout_width="293dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="29dp"
+        android:layout_marginStart="38dp"
+        android:layout_marginTop="23dp"
         android:ems="10"
         android:hint="Edit user name"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="0dp"
+        android:layout_width="265dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="31dp"
+        android:layout_marginBottom="47dp"
+        android:layout_marginEnd="42dp"
+        android:layout_marginStart="53dp"
+        android:layout_marginTop="77dp"
+        android:shadowColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color"
         android:text="Update"
+        android:textColorHighlight="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText" />
+
+    <TextView
+        android:id="@+id/profile_name"
+        style="@style/Widget.AppCompat.TextView.SpinnerItem"
+        android:layout_width="205dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="77dp"
+        android:layout_marginStart="78dp"
+        android:layout_marginTop="2dp"
+        android:text="User Name"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/cast_expanded_controller_background_color"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

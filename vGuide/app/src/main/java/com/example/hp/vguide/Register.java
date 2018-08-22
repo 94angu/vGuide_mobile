@@ -124,6 +124,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
 
         User user = BuildNewuser();
         mdatabase.child(uid).setValue(user);
+        mdatabase.child(uid).child("image").setValue("Default");
+
     }
 
 
@@ -132,6 +134,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                 getDisplayName(),
                 getUserEmail(),
                 new Date().getTime()
+
+
         );
     }
 
